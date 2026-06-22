@@ -1,0 +1,6 @@
+.vs
+.idea
+.cursor
+
+out/
+build/
