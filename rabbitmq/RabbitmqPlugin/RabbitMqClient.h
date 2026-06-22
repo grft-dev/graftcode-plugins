@@ -7,7 +7,7 @@
 
 typedef unsigned char byte;
 
-namespace Hypertube::Native::Transport
+namespace Graftcode::Plugins::Rabbitmq
 {
 	struct RabbitMqClientConfig
 	{

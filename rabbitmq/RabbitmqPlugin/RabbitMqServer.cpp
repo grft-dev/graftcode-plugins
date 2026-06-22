@@ -35,7 +35,10 @@
 #include <thread>
 #include <vector>
 
+typedef unsigned char byte;
+
 using namespace GraftcodeGateway;
+using namespace Graftcode::Plugins::Rabbitmq;
 
 namespace {
 	constexpr int kRabbitMqPrefetchCount = 1;
@@ -416,7 +419,7 @@ namespace {
 	};
 }
 
-void GraftcodeGateway::RabbitMqServer::configure(
+void RabbitMqServer::configure(
 	const std::string& jsonConfig,
 	ProcessMessageFn processMessage) {
 	if (processMessage == nullptr) {
@@ -426,7 +429,7 @@ void GraftcodeGateway::RabbitMqServer::configure(
 	setProcessMessage(processMessage);
 }
 
-void GraftcodeGateway::RabbitMqServer::start() {
+void RabbitMqServer::start() {
 	try {
 		g_stopRequested.store(false, std::memory_order_release);
 		const RabbitMqServerConfig config = currentConfig();
@@ -626,7 +629,7 @@ void GraftcodeGateway::RabbitMqServer::start() {
 	}
 }
 
-void GraftcodeGateway::RabbitMqServer::stop() {
+void RabbitMqServer::stop() {
 	logInfo("Shutting down RabbitMQ consumer... ");
 	g_stopRequested.store(true, std::memory_order_release);
 	closeActiveSocket();
@@ -639,7 +642,7 @@ void GraftcodeGateway::RabbitMqServer::stop() {
 #endif
 
 RABBITMQ_PLUGIN_EXPORT GraftcodeGateway::IServer* CreateServer() {
-	return new GraftcodeGateway::RabbitMqServer();
+	return new RabbitMqServer();
 	
 }
 

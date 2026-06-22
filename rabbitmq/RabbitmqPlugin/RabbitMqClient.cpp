@@ -36,7 +36,7 @@
 #include <thread>
 #include <vector>
 
-using namespace Hypertube::Native::Transport;
+using namespace Graftcode::Plugins::Rabbitmq;
 
 namespace
 {

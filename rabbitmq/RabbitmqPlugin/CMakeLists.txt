@@ -8,7 +8,7 @@ add_library(${target_name} SHARED
 )
 
 target_include_directories(${target_name} PUBLIC 
-    "${CMAKE_SOURCE_DIR}/HypertubeNativeInterfaces"
+    "${CMAKE_SOURCE_DIR}/GraftcodePluginsInterfaces"
 )
 
 include(FetchContent)
