@@ -9,7 +9,7 @@
 #include <thread>
 #include <vector>
 
-namespace Hypertube::Native::Transport
+namespace Graftcode::Plugins::Rabbitmq
 {
 	class TransportRabbitMq : public Hypertube::Native::Interfaces::ITransport
 	{

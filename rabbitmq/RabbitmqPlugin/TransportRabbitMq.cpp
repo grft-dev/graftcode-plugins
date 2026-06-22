@@ -7,7 +7,7 @@
 #include <mutex>
 #include <utility>
 
-using namespace Hypertube::Native::Transport;
+using namespace  Graftcode::Plugins::Rabbitmq;
 
 
 TransportRabbitMq::TransportRabbitMq(std::string host, unsigned short port, std::string configSource)

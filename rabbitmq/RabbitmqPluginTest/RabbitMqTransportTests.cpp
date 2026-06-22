@@ -47,7 +47,7 @@ namespace {
 }
 
 TEST(RabbitMqTransport, SendCommandRejectsInvalidPayloadArguments) {
-	Hypertube::Native::Transport::TransportRabbitMq transport("127.0.0.1", 5672, kValidClientConfig);
+	Graftcode::Plugins::Rabbitmq::TransportRabbitMq transport("127.0.0.1", 5672, kValidClientConfig);
 	for (int i = 0; i < 300; ++i) {
 
 		int responseSize = transport.SendCommand(const_cast<byte*>(kSamplePayload.data()), static_cast<int32_t>(kSamplePayload.size()));

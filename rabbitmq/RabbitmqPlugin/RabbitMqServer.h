@@ -2,8 +2,8 @@
 #include "IServer.h"
 #include <string>
 
-namespace GraftcodeGateway {
-	class RabbitMqServer : public IServer {
+namespace Graftcode::Plugins::Rabbitmq {
+	class RabbitMqServer : public GraftcodeGateway::IServer {
 	public:
 		RabbitMqServer() = default;
 		~RabbitMqServer() override = default;

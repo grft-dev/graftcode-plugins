@@ -20,7 +20,7 @@ FetchContent_MakeAvailable(googletest)
 
 target_include_directories(RabbitMqPluginTests PUBLIC
 	"${CMAKE_SOURCE_DIR}/RabbitmqPlugin"
-	"${CMAKE_SOURCE_DIR}/HypertubeNativeInterfaces"
+	"${CMAKE_SOURCE_DIR}/GraftcodePluginsInterfaces"
 )
 target_link_libraries(RabbitMqPluginTests PRIVATE gtest_main amqpcpp nlohmann_json::nlohmann_json)
 
