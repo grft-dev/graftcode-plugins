@@ -29,10 +29,22 @@ jobs:
             arch: "x86_64"
             compiler: "msvc"
 
+          # Windows ARM64 - MSVC compiler
+          - os: windows-arm64
+            platform: "Windows"
+            arch: "arm64"
+            compiler: "msvc"
+
           # Linux x86_64 - GCC compiler
           - os: ubuntu-latest
             platform: "Linux"
             arch: "x86_64"
+            compiler: "gcc"
+
+          # Linux ARM64 - GCC compiler
+          - os: ubuntu-arm64
+            platform: "Linux"
+            arch: "arm64"
             compiler: "gcc"
 
           # macOS x86_64 - Apple Clang
@@ -46,17 +58,6 @@ jobs:
             platform: "macOS"
             arch: "arm64"
             compiler: "clang"
-
-          # NOTE: For Windows ARM64 and Linux ARM64, you need self-hosted runners
-          # - os: windows-arm64  # Requires self-hosted ARM64 runner
-          #   platform: "Windows"
-          #   arch: "arm64"
-          #   compiler: "msvc"
-          #
-          # - os: linux-arm64    # Requires self-hosted ARM64 runner
-          #   platform: "Linux"
-          #   arch: "arm64"
-          #   compiler: "gcc"
 
     steps:
       - uses: actions/checkout@v4

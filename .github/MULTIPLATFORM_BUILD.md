@@ -9,16 +9,13 @@ This document describes the GitHub Actions workflow for building the RabbitMQ Pl
 | OS | Architecture | Runner | Compiler |
 |---|---|---|---|
 | Windows | x86_64 | `windows-latest` | MSVC |
+| Windows | arm64 | `windows-arm64` | MSVC |
 | Linux | x86_64 | `ubuntu-latest` | GCC |
+| Linux | arm64 | `ubuntu-arm64` | GCC |
 | macOS | x86_64 | `macos-latest` | Apple Clang |
 | macOS | arm64 | `macos-14` | Apple Clang |
 
-### Additional Platforms (Requires self-hosted runner)
-
-| OS | Architecture | Runner | Compiler | Status |
-|---|---|---|---|---|
-| Windows | arm64 | `windows-arm64` (self-hosted) | MSVC | ⏳ To Enable |
-| Linux | arm64 | `linux-arm64` (self-hosted) | GCC | ⏳ To Enable |
+All platforms are available without requiring self-hosted runners!
 
 ## Build Commands
 
@@ -85,29 +82,11 @@ Each platform's built files are packaged as:
 
 ## Enabling ARM Builds
 
-### For Windows ARM64
+ARM builds are already enabled! Just push to trigger builds on:
+- `windows-arm64` - Windows ARM64
+- `ubuntu-arm64` - Linux ARM64
 
-1. Configure a [self-hosted runner](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners) on a Windows ARM64 machine
-2. Uncomment in `.github/workflows/rabbitmq-build.yml`:
-
-```yaml
-- os: windows-arm64  # Requires self-hosted ARM64 runner
-  platform: "Windows"
-  arch: "arm64"
-  compiler: "msvc"
-```
-
-### For Linux ARM64
-
-1. Configure a [self-hosted runner](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners) on a Linux ARM64 machine
-2. Uncomment in `.github/workflows/rabbitmq-build.yml`:
-
-```yaml
-- os: linux-arm64    # Requires self-hosted ARM64 runner
-  platform: "Linux"
-  arch: "arm64"
-  compiler: "gcc"
-```
+No additional configuration needed. The workflow will automatically build on all 6 platforms.
 
 ## Workflow Triggers
 
