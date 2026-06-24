@@ -30,25 +30,25 @@ jobs:
             compiler: "msvc"
 
           # Windows ARM64 - MSVC compiler
-          - os: windows-arm64
+          - os: windows-11-arm
             platform: "Windows"
             arch: "arm64"
             compiler: "msvc"
 
           # Linux x86_64 - GCC compiler
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             platform: "Linux"
             arch: "x86_64"
             compiler: "gcc"
 
           # Linux ARM64 - GCC compiler
-          - os: ubuntu-arm64
+          - os: ubuntu-22.04-arm
             platform: "Linux"
             arch: "arm64"
             compiler: "gcc"
 
           # macOS x86_64 - Apple Clang
-          - os: macos-latest
+          - os: macos-26-intel
             platform: "macOS"
             arch: "x86_64"
             compiler: "clang"
