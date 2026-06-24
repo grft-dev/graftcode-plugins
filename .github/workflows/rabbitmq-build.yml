@@ -1,0 +1,130 @@
+name: RabbitMQ Plugin - Multiplatform CMake Build
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "rabbitmq/**"
+      - ".github/workflows/rabbitmq-build.yml"
+    tags:
+      - "v*"
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - "rabbitmq/**"
+      - ".github/workflows/rabbitmq-build.yml"
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }} (${{ matrix.arch }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows x86_64 - MSVC compiler
+          - os: windows-latest
+            platform: "Windows"
+            arch: "x86_64"
+            compiler: "msvc"
+
+          # Linux x86_64 - GCC compiler
+          - os: ubuntu-latest
+            platform: "Linux"
+            arch: "x86_64"
+            compiler: "gcc"
+
+          # macOS x86_64 - Apple Clang
+          - os: macos-latest
+            platform: "macOS"
+            arch: "x86_64"
+            compiler: "clang"
+
+          # macOS ARM64 (Apple Silicon M-series) - Apple Clang
+          - os: macos-14
+            platform: "macOS"
+            arch: "arm64"
+            compiler: "clang"
+
+          # NOTE: For Windows ARM64 and Linux ARM64, you need self-hosted runners
+          # - os: windows-arm64  # Requires self-hosted ARM64 runner
+          #   platform: "Windows"
+          #   arch: "arm64"
+          #   compiler: "msvc"
+          #
+          # - os: linux-arm64    # Requires self-hosted ARM64 runner
+          #   platform: "Linux"
+          #   arch: "arm64"
+          #   compiler: "gcc"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake git
+
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install cmake
+
+      - name: Set up CMake
+        uses: cmake-actions/setup-cmake@v3
+        with:
+          cmake-version: '3.27'
+
+      - name: Configure CMake (rabbitmq)
+        working-directory: rabbitmq
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build (rabbitmq)
+        working-directory: rabbitmq
+        run: cmake --build build --config Release
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rabbitmq-${{ matrix.platform }}-${{ matrix.arch }}
+          path: rabbitmq/build/RabbitmqPlugin/
+          if-no-files-found: warn
+          retention-days: 30
+
+  # Create GitHub Release with all platform artifacts
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare artifacts for release
+        run: |
+          mkdir -p release-files
+          for dir in artifacts/*/; do
+            platform_arch=$(basename "$dir")
+            tar -czf "release-files/rabbitmq-${platform_arch}.tar.gz" -C "$dir" .
+          done
+          ls -la release-files/
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release-files/*
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
