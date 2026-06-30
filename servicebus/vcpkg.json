@@ -1,0 +1,9 @@
+{
+  "name": "graftcode-servicebus-plugin",
+  "version": "1.0.0",
+  "description": "Graftcode Azure Service Bus transport/server plugin built on the Azure SDK for C++ AMQP library.",
+  "dependencies": [
+    "azure-core-amqp-cpp",
+    "nlohmann-json"
+  ]
+}
