@@ -291,3 +291,62 @@ TEST(NatsIntegration, RealCommunicationRoundTripWithLocalBroker)
     ASSERT_TRUE(roundTripSucceeded) << "Failed to complete NATS round trip.";
     EXPECT_EQ(responsePayload, payload);
 }
+
+TEST(NatsTransport, SendCommandAndReadResponse)
+{
+    constexpr unsigned short kNatsPort = 4222;
+    if (!IsNatsBrokerReachable("127.0.0.1", kNatsPort)) {
+        GTEST_SKIP() << "NATS broker is not reachable on 127.0.0.1:4222";
+    }
+
+    const auto uniqueSuffix = std::to_string(
+        static_cast<unsigned long long>(std::chrono::steady_clock::now().time_since_epoch().count()));
+    const std::string queue = "gg.transport." + uniqueSuffix;
+    const std::string replyQueue = "gg.reply.transport." + uniqueSuffix;
+    const std::string config = BuildConfigJson(queue, replyQueue);
+
+    NatsServer server;
+    ASSERT_NO_THROW(server.configure(config, EchoProcessMessage));
+
+    std::thread serverThread([&server]() {
+        server.start();
+    });
+    ServerThreadGuard guard{ server, serverThread };
+
+    TransportNats transport("127.0.0.1", kNatsPort, config);
+    const std::vector<byte> payload{
+        0x03, 0x00, 0x00, 0x7f, 0x00, 0x00, 0x01, 0x28, 0x16, 0x08, 0x06, 0x00,
+        0x01, 0x00, 0x00, 0x00, 0x03, 0x00, 0x01, 0x01, 0x13, 0x00, 0x00, 0x00,
+        0x54, 0x65, 0x73, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x2e, 0x54, 0x65,
+        0x73, 0x74, 0x43, 0x6c, 0x61, 0x73, 0x73
+    };
+
+    for (int i = 0; i < 30000; ++i) {
+        std::vector<byte> responsePayload;
+        bool roundTripSucceeded = false;
+
+        for (int attempt = 0; attempt < 15 && !roundTripSucceeded; ++attempt) {
+            try {
+                const int responseSize = transport.SendCommand(
+                    const_cast<byte*>(payload.data()),
+                    static_cast<int32_t>(payload.size()));
+                if (responseSize <= 0) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+                    continue;
+                }
+
+                responsePayload.resize(static_cast<std::size_t>(responseSize));
+                EXPECT_EQ(
+                    transport.ReadResponse(responsePayload.data(), responseSize),
+                    0);
+                roundTripSucceeded = true;
+            }
+            catch (const std::exception&) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(150));
+            }
+        }
+
+        ASSERT_TRUE(roundTripSucceeded) << "Failed to complete NATS round trip in iteration " << i << ".";
+        EXPECT_EQ(responsePayload, payload);
+    }
+}

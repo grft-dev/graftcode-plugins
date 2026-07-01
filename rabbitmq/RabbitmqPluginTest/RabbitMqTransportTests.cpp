@@ -46,7 +46,7 @@ namespace {
 	};
 }
 
-TEST(RabbitMqTransport, SendCommandRejectsInvalidPayloadArguments) {
+TEST(RabbitMqTransport, SendCommandAdnReadResponse) {
 	Graftcode::Plugins::Rabbitmq::TransportRabbitMq transport("127.0.0.1", 5672, kValidClientConfig);
 	for (int i = 0; i < 300; ++i) {
 
